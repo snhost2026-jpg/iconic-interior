@@ -130,9 +130,10 @@ body {
 /* ---------- Header ---------- */
 .site-header { transition: background .4s, backdrop-filter .4s, border-color .4s, padding .4s; }
 .site-header.is-scrolled {
-    background: rgba(10,10,10,.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    background: transparent;
     border-bottom-color: rgba(212,175,55,.14);
 }
+.site-header.is-blurred { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 .nav-link { position: relative; padding: .5rem 0; font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: #d1d5db; font-weight: 600; transition: color .3s; }
 .nav-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--gold); transform: scaleX(0); transform-origin: right; transition: transform .45s var(--ease-lux); }
 .nav-link:hover, .nav-link.active { color: var(--gold); }

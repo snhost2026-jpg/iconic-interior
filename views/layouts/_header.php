@@ -17,7 +17,7 @@ $navItems = [
 ];
 ?>
 
-<header class="site-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-white/5 py-3 md:py-4 px-4 sm:px-6 lg:px-8 bg-[#0A0A0A]/80 backdrop-blur-md"
+<header class="site-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-white/5 py-3 md:py-4 px-4 sm:px-6 lg:px-8 bg-transparent"
         x-data="{ mobileOpen: false }">
     <div class="max-w-7xl mx-auto flex items-center justify-between gap-6">
         <!-- Logo -->

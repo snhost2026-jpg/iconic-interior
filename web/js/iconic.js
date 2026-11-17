@@ -22,12 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Header scroll background toggle
     const header = document.querySelector('.site-header');
     if (header) {
+        const scrollSequence = document.querySelector('#pre-hero-scroll');
         const checkScroll = () => {
-            if (window.scrollY > 40) {
-                header.classList.add('is-scrolled');
-            } else {
-                header.classList.remove('is-scrolled');
-            }
+            const isScrolled = window.scrollY > 40;
+            const sequenceHasEnded = !scrollSequence
+                || scrollSequence.getBoundingClientRect().bottom <= window.innerHeight;
+
+            header.classList.toggle('is-scrolled', isScrolled);
+            header.classList.toggle('is-blurred', isScrolled && sequenceHasEnded);
         };
         window.addEventListener('scroll', checkScroll, { passive: true });
         checkScroll();

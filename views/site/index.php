@@ -19,6 +19,7 @@ $this->title = $page ? $page->title : 'Luxury Interiors & Bespoke Architecture';
 $this->params['meta_description'] = $page?->meta_description;
 $stats = $page ? ($page->getExtra()['stats'] ?? []) : [];
 $seqBaseUrl = Yii::getAlias('@web') . '/images/apartment-sequence';
+$mobileSeqBaseUrl = Yii::getAlias('@web') . '/images/mobile-sequence';
 ?>
 
 <!-- ═══ Full-Screen Animated Preloader (above everything, including header) ═══ -->
@@ -116,7 +117,7 @@ $seqBaseUrl = Yii::getAlias('@web') . '/images/apartment-sequence';
                 <div class="pre-hero-progress-bar" id="pre-hero-bar"></div>
             </div>
             <div class="pre-hero-counter">
-                <span id="pre-hero-frame-num">001</span> / 239
+                <span id="pre-hero-frame-num">001</span> / <span id="pre-hero-total-frames">239</span>
             </div>
             <button type="button" class="pre-hero-scroll-hint" id="pre-hero-scroll-btn">
                 <span>Scroll to Unveil</span>
@@ -136,7 +137,7 @@ $seqBaseUrl = Yii::getAlias('@web') . '/images/apartment-sequence';
 #pre-hero-scroll {
     position: relative;
     width: 100%;
-    height: 450vh;
+    height: 150vh;
     background-color: #050505;
     margin: 0;
     padding: 0;
@@ -319,7 +320,7 @@ $seqBaseUrl = Yii::getAlias('@web') . '/images/apartment-sequence';
     color: #9CA3AF;
 }
 
-#pre-hero-scroll .pre-hero-counter span {
+#pre-hero-scroll .pre-hero-counter #pre-hero-frame-num {
     color: #D4AF37;
     font-weight: 700;
 }
@@ -595,14 +596,19 @@ $seqBaseUrl = Yii::getAlias('@web') . '/images/apartment-sequence';
     const loader      = document.getElementById('pre-hero-loader');
     const progressBar = document.getElementById('pre-hero-bar');
     const frameNum    = document.getElementById('pre-hero-frame-num');
+    const totalFrameNum = document.getElementById('pre-hero-total-frames');
     const scrollBtn   = document.getElementById('pre-hero-scroll-btn');
 
     const cap1 = document.getElementById('ph-caption-1');
     const cap2 = document.getElementById('ph-caption-2');
     const cap3 = document.getElementById('ph-caption-3');
 
-    const TOTAL_FRAMES = 239;
-    const baseUrl = <?= json_encode($seqBaseUrl) ?>;
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    const TOTAL_FRAMES = isMobile ? 135 : 239;
+    const baseUrl = isMobile
+        ? <?= json_encode($mobileSeqBaseUrl) ?>
+        : <?= json_encode($seqBaseUrl) ?>;
+    if (totalFrameNum) totalFrameNum.textContent = String(TOTAL_FRAMES);
 
     const images = new Array(TOTAL_FRAMES);
     const loaded = new Array(TOTAL_FRAMES).fill(false);
@@ -622,7 +628,8 @@ $seqBaseUrl = Yii::getAlias('@web') . '/images/apartment-sequence';
     document.documentElement.style.overflow = 'hidden';
 
     function getFrameUrl(idx) {
-        return baseUrl + '/frame_' + String(idx).padStart(6, '0') + '.webp';
+        const frameNumber = String(isMobile ? idx + 1 : idx).padStart(isMobile ? 3 : 6, '0');
+        return baseUrl + '/frame_' + frameNumber + (isMobile ? '.jpg' : '.webp');
     }
 
     // ── Reveal sequence after all frames loaded ────────────────────────
