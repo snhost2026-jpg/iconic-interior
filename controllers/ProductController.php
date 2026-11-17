@@ -52,7 +52,7 @@ class ProductController extends Controller
 
         $products   = $query->all();
         $categories = Product::CATEGORIES;
-        $cartCount  = CartItem::countForSession(Yii::$app->session->getId());
+        $cartCount  = CartItem::countForSession();
 
         $this->view->title = 'Luxury Interior Products — ICONIC Shop';
         $this->view->params['meta_description'] = 'Curate your home with ICONIC INTERIORS — handcrafted lighting, bespoke furniture, artisan decor, luxury textiles and original wall art.';
@@ -76,7 +76,7 @@ class ProductController extends Controller
             ->orderBy(['sort_order' => SORT_ASC])
             ->limit(4)
             ->all();
-        $cartCount = CartItem::countForSession(Yii::$app->session->getId());
+        $cartCount = CartItem::countForSession();
 
         $this->view->title = $product->meta_title ?: $product->name . ' — ICONIC Shop';
         $this->view->params['meta_description'] = $product->meta_description ?: $product->short_description;
@@ -100,11 +100,12 @@ class ProductController extends Controller
         if (!$product) {
             return ['success' => false, 'message' => 'Product not available.'];
         }
-        CartItem::addToCart(Yii::$app->session->getId(), $productId, $qty);
+        $sessionId = CartItem::getSessionId();
+        CartItem::addToCart($sessionId, $productId, $qty);
         return [
             'success'    => true,
             'message'    => 'Added to cart!',
-            'cart_count' => CartItem::countForSession(Yii::$app->session->getId()),
+            'cart_count' => CartItem::countForSession($sessionId),
         ];
     }
 
@@ -117,13 +118,14 @@ class ProductController extends Controller
         if (!Yii::$app->request->isPost) {
             return ['success' => false];
         }
+        $sessionId = CartItem::getSessionId();
         CartItem::removeFromCart(
-            Yii::$app->session->getId(),
+            $sessionId,
             (int) Yii::$app->request->post('product_id')
         );
         return [
             'success'    => true,
-            'cart_count' => CartItem::countForSession(Yii::$app->session->getId()),
+            'cart_count' => CartItem::countForSession($sessionId),
         ];
     }
 
@@ -136,14 +138,15 @@ class ProductController extends Controller
         if (!Yii::$app->request->isPost) {
             return ['success' => false];
         }
+        $sessionId = CartItem::getSessionId();
         CartItem::updateQty(
-            Yii::$app->session->getId(),
+            $sessionId,
             (int) Yii::$app->request->post('product_id'),
             (int) Yii::$app->request->post('qty')
         );
         return [
             'success'    => true,
-            'cart_count' => CartItem::countForSession(Yii::$app->session->getId()),
+            'cart_count' => CartItem::countForSession($sessionId),
         ];
     }
 
@@ -152,7 +155,7 @@ class ProductController extends Controller
      * ------------------------------------------------------------------ */
     public function actionCart()
     {
-        $sessionId = Yii::$app->session->getId();
+        $sessionId = CartItem::getSessionId();
         $items     = CartItem::forSession($sessionId);
         $settings  = SiteSettings::get();
         $cartCount = CartItem::countForSession($sessionId);

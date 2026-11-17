@@ -80,13 +80,18 @@ $gallery = $project->getGallery();
             <span class="text-xs text-gray-400 hidden sm:inline">Drag the split handle to reveal the transformation</span>
         </div>
 
-        <div class="stage aspect-[16/9] w-full gold-frame shadow-2xl relative select-none"
-             x-data="{ pos: 50 }">
+        <div class="stage is-comparing aspect-[16/9] w-full gold-frame shadow-2xl relative select-none"
+             x-data="beforeAfterSlider(50)"
+             :style="'--pos: ' + pos + '%'"
+             @touchstart.passive="false"
+             @touchstart="startDrag($event)"
+             @mousedown="startDrag($event)">
             
             <!-- Before Image -->
             <img src="<?= Media::url($project->before_image) ?>" 
                  alt="Before Renovation Shell" 
-                 class="stage-img before-layer z-0">
+                 class="stage-img before-layer z-0"
+                 loading="lazy">
 
             <!-- After Cover Image -->
             <img src="<?= $project->getCoverUrl() ?>" 
@@ -103,7 +108,7 @@ $gallery = $project->getGallery();
                 </span>
             </div>
 
-            <input type="range" min="0" max="100" x-model="pos" class="compare-range" aria-label="Before/After Slider">
+            <input type="range" min="0" max="100" x-model.number="pos" @input="pos = Number($event.target.value)" class="compare-range" aria-label="Before/After Slider">
 
             <div class="compare-label left-4 text-gray-300">Raw Site</div>
             <div class="compare-label right-4 text-[#D4AF37] border-[#D4AF37]/40">ICONIC Delivery</div>

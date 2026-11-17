@@ -1,11 +1,13 @@
 <?php
 
+use app\models\CartItem;
 use app\models\SiteSettings;
 use yii\helpers\Url;
 
 $settings = SiteSettings::get();
 $currentRoute = Yii::$app->controller ? (string) Yii::$app->controller->route : '';
 $isHome = ($currentRoute === 'site/index');
+$cartCount = CartItem::countForSession();
 
 $navItems = [
     ['label' => 'Services', 'url' => ['/service/index'], 'active' => (str_starts_with($currentRoute, 'service/'))],
@@ -44,6 +46,18 @@ $navItems = [
                 <span><?= $settings->phone_primary ?></span>
             </a>
 
+            <!-- Cart Icon Button -->
+            <a href="<?= Url::to(['/product/cart']) ?>" 
+               class="relative p-2.5 rounded-full border border-white/10 hover:border-[#D4AF37]/50 text-gray-300 hover:text-[#D4AF37] transition-all bg-white/[0.02] flex items-center justify-center group"
+               title="Shopping Cart">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+                <span class="header-cart-badge <?= $cartCount > 0 ? '' : 'hidden' ?> absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#D4AF37] text-[#0A0A0A] text-[9px] font-black flex items-center justify-center shadow-md">
+                    <?= $cartCount ?>
+                </span>
+            </a>
+
             <!-- Book Consultation CTA Button -->
             <button type="button"
                     @click="$dispatch('open-inquiry-modal', { source: 'Header Consultation Button', message: 'Hello, I would like to book an interior consultation with ICONIC INTERIORS.' })"
@@ -55,18 +69,33 @@ $navItems = [
             </button>
         </div>
 
-        <!-- Mobile Menu Trigger -->
-        <button type="button" 
-                @click="mobileOpen = !mobileOpen"
-                class="lg:hidden p-2 rounded-lg border border-white/10 text-gray-300 hover:text-[#D4AF37] focus:outline-none"
-                aria-label="Toggle navigation menu">
-            <svg x-show="!mobileOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
-            </svg>
-            <svg x-show="mobileOpen" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
+        <!-- Mobile Quick Actions & Menu Trigger -->
+        <div class="lg:hidden flex items-center gap-2">
+            <!-- Mobile Cart Icon -->
+            <a href="<?= Url::to(['/product/cart']) ?>" 
+               class="relative p-2 rounded-lg border border-white/10 text-gray-300 hover:text-[#D4AF37] flex items-center justify-center"
+               title="Shopping Cart">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+                <span class="header-cart-badge <?= $cartCount > 0 ? '' : 'hidden' ?> absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#D4AF37] text-[#0A0A0A] text-[9px] font-black flex items-center justify-center shadow-md">
+                    <?= $cartCount ?>
+                </span>
+            </a>
+
+            <!-- Mobile Menu Trigger -->
+            <button type="button" 
+                    @click="mobileOpen = !mobileOpen"
+                    class="p-2 rounded-lg border border-white/10 text-gray-300 hover:text-[#D4AF37] focus:outline-none"
+                    aria-label="Toggle navigation menu">
+                <svg x-show="!mobileOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+                </svg>
+                <svg x-show="mobileOpen" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
     </div>
 
     <!-- Mobile Navigation Drawer -->
@@ -78,7 +107,7 @@ $navItems = [
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 -translate-y-4"
-         class="lg:hidden absolute top-full left-0 right-0 bg-[#0E0E0E] border-b border-white/10 shadow-2xl p-6 flex flex-col gap-4">
+         class="site-header-mobile-drawer lg:hidden absolute top-full left-0 right-0 bg-transparent border-b border-white/10 shadow-2xl p-6 flex flex-col gap-4">
         
         <div class="flex flex-col gap-2">
             <?php foreach ($navItems as $item): ?>
@@ -88,6 +117,21 @@ $navItems = [
                     <?= $item['label'] ?>
                 </a>
             <?php endforeach; ?>
+
+            <!-- Mobile Drawer Cart Link -->
+            <a href="<?= Url::to(['/product/cart']) ?>" 
+               @click="mobileOpen = false"
+               class="px-4 py-3 rounded-lg text-sm font-semibold tracking-wider uppercase transition-colors flex items-center justify-between text-[#D4AF37] bg-[#D4AF37]/10 border border-[#D4AF37]/25">
+                <span class="flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                    <span>Shopping Cart</span>
+                </span>
+                <span class="header-cart-badge px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#0A0A0A] text-xs font-black <?= $cartCount > 0 ? '' : 'hidden' ?>">
+                    <?= $cartCount ?>
+                </span>
+            </a>
         </div>
 
         <div class="pt-4 border-t border-white/10 flex flex-col gap-3">

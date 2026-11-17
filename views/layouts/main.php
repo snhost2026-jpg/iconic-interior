@@ -71,9 +71,18 @@ $metaDesc = $this->params['meta_description'] ?? $settings->meta_description;
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
 
+    <script>
+    window.ICONIC_CART_URLS = {
+        add: <?= json_encode(\yii\helpers\Url::to(['/product/add-to-cart'])) ?>,
+        remove: <?= json_encode(\yii\helpers\Url::to(['/product/remove-from-cart'])) ?>,
+        update: <?= json_encode(\yii\helpers\Url::to(['/product/update-cart'])) ?>,
+        view: <?= json_encode(\yii\helpers\Url::to(['/product/cart'])) ?>
+    };
+    </script>
+
     <?php $this->head() ?>
 </head>
-<body class="min-h-full bg-[#0A0A0A] text-[#F9FAFB] font-sans antialiased selection:bg-[#D4AF37]/30 selection:text-white grain flex flex-col">
+<body class="min-h-screen bg-[#0A0A0A] text-[#F9FAFB] font-sans antialiased selection:bg-[#D4AF37]/30 selection:text-white grain flex flex-col">
 <?php $this->beginBody() ?>
 
     <!-- Header Navigation -->

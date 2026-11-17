@@ -271,52 +271,69 @@ $disc    = $product->getDiscountPercent();
 $addUrl    = Url::to(['/product/add-to-cart']);
 $cartUrl   = Url::to(['/product/cart']);
 $this->registerJs(<<<JS
-function addToCart(productId, qty) {
+window.addToCart = function(productId, qty) {
     qty = qty || 1;
     const btn = document.getElementById('add-to-cart-' + productId);
+    let originalHtml = '';
     if (btn) {
         btn.disabled = true;
+        originalHtml = btn.innerHTML;
+        btn.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin inline-block" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg> <span>Adding...</span>';
     }
     fetch('$addUrl', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-Token': document.querySelector('meta[name=csrf-token]') ? document.querySelector('meta[name=csrf-token]').content : ''
+        },
         body: 'product_id=' + productId + '&qty=' + qty + '&_csrf=' + (document.querySelector('meta[name=csrf-token]') ? document.querySelector('meta[name=csrf-token]').content : '')
     })
     .then(r => r.json())
     .then(data => {
-        if (btn) btn.disabled = false;
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml || '<span>Add to Cart</span>';
+        }
         if (data.success) {
-            showCartToast(data.message || 'Added to cart!');
-            updateCartBadge(data.cart_count);
+            window.showCartToast(data.message || 'Added to cart!');
+            window.updateCartBadge(data.cart_count);
+        } else {
+            alert(data.message || 'Could not add to cart.');
         }
     })
-    .catch(() => { if (btn) btn.disabled = false; });
-}
+    .catch(() => {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml || '<span>Add to Cart</span>';
+        }
+    });
+};
 
-function addToCartWithQty(productId, qty) {
-    addToCart(productId, qty);
-}
+window.addToCartWithQty = function(productId, qty) {
+    window.addToCart(productId, qty);
+};
 
-function showCartToast(msg) {
-    const toast = document.getElementById('cart-toast');
-    const msgEl = document.getElementById('cart-toast-msg');
+window.showCartToast = function(msg) {
+    const toast = document.getElementById('cart-toast') || document.getElementById('global-cart-toast');
     if (!toast) return;
+    const msgEl = toast.querySelector('#cart-toast-msg') || toast.querySelector('span:nth-of-type(2)');
     if (msgEl) msgEl.textContent = msg;
-    toast.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
+    toast.classList.remove('opacity-0', '-translate-y-4', 'translate-y-4', 'pointer-events-none');
     toast.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
-    setTimeout(() => {
+    clearTimeout(window._cartToastTimer);
+    window._cartToastTimer = setTimeout(() => {
         toast.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
         toast.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
     }, 3500);
-}
+};
 
-function updateCartBadge(count) {
-    const badge = document.getElementById('cart-badge');
-    if (badge) {
+window.updateCartBadge = function(count) {
+    const badges = document.querySelectorAll('.header-cart-badge, #cart-badge');
+    badges.forEach(badge => {
         badge.textContent = count;
         if (count > 0) badge.classList.remove('hidden');
         else badge.classList.add('hidden');
-    }
-}
+    });
+};
 JS);
 ?>

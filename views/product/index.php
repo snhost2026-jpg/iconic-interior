@@ -266,7 +266,7 @@ use yii\helpers\Url;
 $addUrl = \yii\helpers\Url::to(['/product/add-to-cart']);
 $js = <<<JS
 // Add to cart AJAX
-function addToCart(productId, qty = 1) {
+window.addToCart = function(productId, qty = 1) {
     const btn = document.getElementById('add-to-cart-' + productId);
     if (btn) {
         btn.disabled = true;
@@ -287,8 +287,8 @@ function addToCart(productId, qty = 1) {
             btn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg><span>Add to Cart</span>';
         }
         if (data.success) {
-            showCartToast(data.message || 'Added to cart!');
-            updateCartBadge(data.cart_count);
+            window.showCartToast(data.message || 'Added to cart!');
+            window.updateCartBadge(data.cart_count);
         }
     })
     .catch(() => {
@@ -297,30 +297,31 @@ function addToCart(productId, qty = 1) {
             btn.innerHTML = '<span>Add to Cart</span>';
         }
     });
-}
+};
 
-function showCartToast(msg) {
-    const toast = document.getElementById('cart-toast');
-    const msgEl = document.getElementById('cart-toast-msg');
+window.showCartToast = function(msg) {
+    const toast = document.getElementById('cart-toast') || document.getElementById('global-cart-toast');
+    const msgEl = toast ? (toast.querySelector('#cart-toast-msg') || toast.querySelector('span:nth-of-type(2)')) : null;
     if (toast && msgEl) {
         msgEl.textContent = msg;
-        toast.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
+        toast.classList.remove('opacity-0', '-translate-y-4', 'translate-y-4', 'pointer-events-none');
         toast.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
-        setTimeout(() => {
+        clearTimeout(window._cartToastTimer);
+        window._cartToastTimer = setTimeout(() => {
             toast.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
             toast.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
         }, 3500);
     }
-}
+};
 
-function updateCartBadge(count) {
-    const badge = document.getElementById('cart-badge');
-    if (badge) {
+window.updateCartBadge = function(count) {
+    const badges = document.querySelectorAll('.header-cart-badge, #cart-badge');
+    badges.forEach(badge => {
         badge.textContent = count;
         if (count > 0) badge.classList.remove('hidden');
         else badge.classList.add('hidden');
-    }
-}
+    });
+};
 JS;
 
 $this->registerJs($js);

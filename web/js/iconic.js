@@ -128,6 +128,56 @@ window.heroCustomizer = function(initialPresets = [], defaultRoom = 'Living Loun
             }
         },
 
+        startCompareDrag(e) {
+            if (!this.showBeforeAfter) return;
+            // Ignore clicks on buttons or form inputs (other than the compare range)
+            if (e.target && e.target.closest && e.target.closest('button, a, input:not(.compare-range)')) return;
+
+            const stage = e.currentTarget;
+            if (!stage) return;
+
+            const getX = (evt) => {
+                if (evt.touches && evt.touches.length > 0) return evt.touches[0].clientX;
+                if (evt.changedTouches && evt.changedTouches.length > 0) return evt.changedTouches[0].clientX;
+                return evt.clientX;
+            };
+
+            const update = (evt) => {
+                const rect = stage.getBoundingClientRect();
+                const clientX = getX(evt);
+                if (clientX === undefined) return;
+                let pct = ((clientX - rect.left) / rect.width) * 100;
+                this.comparePos = Math.max(0, Math.min(100, Math.round(pct)));
+            };
+
+            update(e);
+
+            const onMove = (evt) => {
+                if (evt.cancelable) evt.preventDefault();
+                update(evt);
+            };
+
+            const onEnd = () => {
+                window.removeEventListener('pointermove', onMove);
+                window.removeEventListener('pointerup', onEnd);
+                window.removeEventListener('pointercancel', onEnd);
+                window.removeEventListener('touchmove', onMove);
+                window.removeEventListener('touchend', onEnd);
+                window.removeEventListener('touchcancel', onEnd);
+                window.removeEventListener('mousemove', onMove);
+                window.removeEventListener('mouseup', onEnd);
+            };
+
+            window.addEventListener('pointermove', onMove, { passive: false });
+            window.addEventListener('pointerup', onEnd, { once: true });
+            window.addEventListener('pointercancel', onEnd, { once: true });
+            window.addEventListener('touchmove', onMove, { passive: false });
+            window.addEventListener('touchend', onEnd, { once: true });
+            window.addEventListener('touchcancel', onEnd, { once: true });
+            window.addEventListener('mousemove', onMove, { passive: false });
+            window.addEventListener('mouseup', onEnd, { once: true });
+        },
+
         syncActive() {
             const p = this.currentPreset;
             if (p) {
@@ -146,6 +196,62 @@ window.heroCustomizer = function(initialPresets = [], defaultRoom = 'Living Loun
                     message: `I loved the "${p?.style}" design preset in the ${p?.room} showcase. Please get in touch for a site consultation.`
                 }
             }));
+        }
+    };
+};
+
+/**
+ * Alpine.js Standalone Before/After Comparison Slider Component
+ */
+window.beforeAfterSlider = function(initialPos = 50) {
+    return {
+        pos: initialPos,
+        startDrag(e) {
+            if (e.target && e.target.closest && e.target.closest('button, a, input:not(.compare-range)')) return;
+
+            const stage = e.currentTarget;
+            if (!stage) return;
+
+            const getX = (evt) => {
+                if (evt.touches && evt.touches.length > 0) return evt.touches[0].clientX;
+                if (evt.changedTouches && evt.changedTouches.length > 0) return evt.changedTouches[0].clientX;
+                return evt.clientX;
+            };
+
+            const update = (evt) => {
+                const rect = stage.getBoundingClientRect();
+                const clientX = getX(evt);
+                if (clientX === undefined) return;
+                let pct = ((clientX - rect.left) / rect.width) * 100;
+                this.pos = Math.max(0, Math.min(100, Math.round(pct)));
+            };
+
+            update(e);
+
+            const onMove = (evt) => {
+                if (evt.cancelable) evt.preventDefault();
+                update(evt);
+            };
+
+            const onEnd = () => {
+                window.removeEventListener('pointermove', onMove);
+                window.removeEventListener('pointerup', onEnd);
+                window.removeEventListener('pointercancel', onEnd);
+                window.removeEventListener('touchmove', onMove);
+                window.removeEventListener('touchend', onEnd);
+                window.removeEventListener('touchcancel', onEnd);
+                window.removeEventListener('mousemove', onMove);
+                window.removeEventListener('mouseup', onEnd);
+            };
+
+            window.addEventListener('pointermove', onMove, { passive: false });
+            window.addEventListener('pointerup', onEnd, { once: true });
+            window.addEventListener('pointercancel', onEnd, { once: true });
+            window.addEventListener('touchmove', onMove, { passive: false });
+            window.addEventListener('touchend', onEnd, { once: true });
+            window.addEventListener('touchcancel', onEnd, { once: true });
+            window.addEventListener('mousemove', onMove, { passive: false });
+            window.addEventListener('mouseup', onEnd, { once: true });
         }
     };
 };
@@ -302,4 +408,103 @@ window.updateCompare = function(e, container) {
     let pos = ((clientX - rect.left) / rect.width) * 100;
     pos = Math.max(0, Math.min(100, pos));
     container.style.setProperty('--pos', pos + '%');
+};
+
+/**
+ * Universal Cart Interaction Helpers (Globally accessible)
+ */
+window.updateCartBadge = function(count) {
+    const badges = document.querySelectorAll('.header-cart-badge, #cart-badge');
+    badges.forEach(badge => {
+        badge.textContent = count;
+        if (count > 0) {
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    });
+};
+
+window.showCartToast = function(msg, viewCartUrl) {
+    let toast = document.getElementById('global-cart-toast') || document.getElementById('cart-toast') || document.getElementById('hp-cart-toast');
+    const targetUrl = viewCartUrl || (window.ICONIC_CART_URLS && window.ICONIC_CART_URLS.view) || '/cart';
+    
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'global-cart-toast';
+        toast.className = 'fixed bottom-8 sm:bottom-12 left-1/2 -translate-x-1/2 z-[300] flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-[#111] border border-[#D4AF37]/50 shadow-2xl backdrop-blur-md text-sm font-medium text-white opacity-0 pointer-events-none transition-all duration-300 translate-y-4';
+        toast.innerHTML = '<span class="text-[#D4AF37] text-lg font-bold">✓</span> <span class="cart-toast-msg-text">Added to cart!</span> <a href="' + targetUrl + '" class="text-[#D4AF37] underline text-xs font-bold ml-2 hover:text-white transition-colors">View Cart →</a>';
+        document.body.appendChild(toast);
+    }
+
+    const msgEl = toast.querySelector('#cart-toast-msg') || toast.querySelector('.cart-toast-msg-text') || toast.querySelector('span:nth-of-type(2)');
+    if (msgEl && msg) msgEl.textContent = msg;
+
+    const link = toast.querySelector('a');
+    if (link && targetUrl) link.href = targetUrl;
+
+    toast.classList.remove('opacity-0', 'translate-y-4', '-translate-y-4', 'pointer-events-none');
+    toast.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+
+    clearTimeout(window._cartToastTimer);
+    window._cartToastTimer = setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+    }, 4000);
+};
+
+window.addToCart = function(productId, qty, btnEl) {
+    qty = qty || 1;
+    const csrfMeta = document.querySelector('meta[name=csrf-token]');
+    const csrfToken = csrfMeta ? csrfMeta.content : '';
+    const btn = btnEl || document.getElementById('add-to-cart-' + productId) || document.getElementById('hp-cart-btn-' + productId);
+    let originalHtml = '';
+
+    if (btn) {
+        btn.disabled = true;
+        originalHtml = btn.innerHTML;
+        btn.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin inline-block" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg> <span>Adding...</span>';
+    }
+
+    const addUrl = (window.ICONIC_CART_URLS && window.ICONIC_CART_URLS.add) ? window.ICONIC_CART_URLS.add : '/shop/cart/add';
+    const viewCartUrl = (window.ICONIC_CART_URLS && window.ICONIC_CART_URLS.view) ? window.ICONIC_CART_URLS.view : '/cart';
+
+    return fetch(addUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-Token': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: 'product_id=' + encodeURIComponent(productId) + '&qty=' + encodeURIComponent(qty) + '&_csrf=' + encodeURIComponent(csrfToken)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml || '<span>Add to Cart</span>';
+        }
+        if (data.success) {
+            window.showCartToast(data.message || 'Added to cart!', viewCartUrl);
+            window.updateCartBadge(data.cart_count);
+        } else {
+            alert(data.message || 'Could not add to cart.');
+        }
+        return data;
+    })
+    .catch(err => {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml || '<span>Add to Cart</span>';
+        }
+        console.error('Cart add error:', err);
+    });
+};
+
+window.addToCartWithQty = function(productId, qty) {
+    return window.addToCart(productId, qty);
+};
+
+window.addToCartHP = function(productId) {
+    return window.addToCart(productId, 1);
 };

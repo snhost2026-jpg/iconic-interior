@@ -173,34 +173,31 @@ $pricesJson = json_encode($productPrices);
 $this->registerJs(<<<JS
 const PRODUCT_PRICES = {$pricesJson};
 
-function updateQty(productId, newQty) {
+window.updateQty = function(productId, newQty) {
     fetch('$updateUrl', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-Token': document.querySelector('meta[name=csrf-token]') ? document.querySelector('meta[name=csrf-token]').content : ''
+        },
         body: 'product_id=' + productId + '&qty=' + newQty + '&_csrf=' + (document.querySelector('meta[name=csrf-token]') ? document.querySelector('meta[name=csrf-token]').content : '')
     })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            if (newQty <= 0) {
-                const row = document.getElementById('cart-row-' + productId);
-                if (row) row.remove();
-            } else {
-                const qtyEl = document.getElementById('qty-' + productId);
-                if (qtyEl) qtyEl.textContent = newQty;
-                const ltEl = document.getElementById('line-total-' + productId);
-                if (ltEl) ltEl.textContent = '₹' + Math.round(PRODUCT_PRICES[productId] * newQty).toLocaleString('en-IN');
-            }
-            updateCartBadge(data.cart_count);
-            location.reload(); // reload to update totals
+            window.updateCartBadge(data.cart_count);
+            location.reload();
         }
     });
-}
+};
 
-function removeItem(productId) {
+window.removeItem = function(productId) {
     fetch('$removeUrl', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-Token': document.querySelector('meta[name=csrf-token]') ? document.querySelector('meta[name=csrf-token]').content : ''
+        },
         body: 'product_id=' + productId + '&_csrf=' + (document.querySelector('meta[name=csrf-token]') ? document.querySelector('meta[name=csrf-token]').content : '')
     })
     .then(r => r.json())
@@ -211,19 +208,21 @@ function removeItem(productId) {
                 row.style.opacity = '0';
                 row.style.transition = 'opacity 0.3s';
                 setTimeout(() => { row.remove(); location.reload(); }, 300);
+            } else {
+                location.reload();
             }
-            updateCartBadge(data.cart_count);
+            window.updateCartBadge(data.cart_count);
         }
     });
-}
+};
 
-function updateCartBadge(count) {
-    const badge = document.getElementById('cart-badge');
-    if (badge) {
+window.updateCartBadge = function(count) {
+    const badges = document.querySelectorAll('.header-cart-badge, #cart-badge');
+    badges.forEach(badge => {
         badge.textContent = count;
         if (count > 0) badge.classList.remove('hidden');
         else badge.classList.add('hidden');
-    }
-}
+    });
+};
 JS);
 ?>
