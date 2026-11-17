@@ -116,9 +116,6 @@ $mobileSeqBaseUrl = Yii::getAlias('@web') . '/images/mobile-sequence';
             <div class="pre-hero-progress-track">
                 <div class="pre-hero-progress-bar" id="pre-hero-bar"></div>
             </div>
-            <div class="pre-hero-counter">
-                <span id="pre-hero-frame-num">001</span> / <span id="pre-hero-total-frames">239</span>
-            </div>
             <button type="button" class="pre-hero-scroll-hint" id="pre-hero-scroll-btn">
                 <span>Scroll to Unveil</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
