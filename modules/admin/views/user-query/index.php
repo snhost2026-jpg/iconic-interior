@@ -168,9 +168,15 @@ $serviceList = Service::titleList();
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase <?= $m->status === 'New' ? 'bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/40' : ($m->status === 'Converted' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-white/10 text-gray-300') ?>">
-                                        <?= Html::encode($m->status) ?>
-                                    </span>
+                                    <form method="post" action="<?= Url::to(['update-status', 'id' => $m->id, 'status' => $m->status]) ?>" class="inline-block">
+                                        <?= Html::hiddenInput(Yii::$app->request->csrfParam, Yii::$app->request->csrfToken) ?>
+                                        <select onchange="this.form.action='<?= Url::to(['update-status', 'id' => $m->id]) ?>&status=' + encodeURIComponent(this.value); this.form.submit();"
+                                                class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-[#181818] border outline-none cursor-pointer <?= $m->status === 'New' ? 'border-[#D4AF37]/50 text-[#D4AF37]' : ($m->status === 'Converted' ? 'border-emerald-500/50 text-emerald-300' : ($m->status === 'Site Visit' ? 'border-cyan-500/50 text-cyan-300' : 'border-white/10 text-gray-300')) ?>">
+                                            <?php foreach (UserQuery::STATUSES as $st): ?>
+                                                <option value="<?= $st ?>" class="bg-[#141414] text-white" <?= $m->status === $st ? 'selected' : '' ?>><?= $st ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </form>
                                 </td>
                                 <td class="text-xs font-mono text-gray-400">
                                     <?= Yii::$app->formatter->asDatetime($m->created_at, 'php:d M Y, h:i A') ?>

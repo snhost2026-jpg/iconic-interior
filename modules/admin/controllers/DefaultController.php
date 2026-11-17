@@ -5,6 +5,7 @@ namespace app\modules\admin\controllers;
 use Yii;
 use app\models\HeroStyle;
 use app\models\LoginForm;
+use app\models\Product;
 use app\models\Project;
 use app\models\Service;
 use app\models\UserQuery;
@@ -31,13 +32,28 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
+        $totalQueries = (int) UserQuery::find()->count();
+        $convertedQueries = (int) UserQuery::find()->where(['status' => 'Converted'])->count();
+        $conversionRate = $totalQueries > 0 ? round(($convertedQueries / $totalQueries) * 100, 1) : 0;
+
         $kpis = [
-            'total_queries' => (int) UserQuery::find()->count(),
+            'total_queries' => $totalQueries,
             'unread_queries' => (int) UserQuery::find()->where(['is_read' => 0])->count(),
+            'converted_queries' => $convertedQueries,
+            'conversion_rate' => $conversionRate,
             'active_services' => (int) Service::find()->where(['is_active' => 1])->count(),
             'portfolio_projects' => (int) Project::find()->where(['is_active' => 1])->count(),
             'hero_styles' => (int) HeroStyle::find()->where(['is_active' => 1])->count(),
+            'total_products' => (int) Product::find()->count(),
+            'active_products' => (int) Product::find()->where(['is_active' => 1])->count(),
+            'out_of_stock_products' => (int) Product::find()->where(['or', ['is_in_stock' => 0], ['<=', 'stock', 0]])->count(),
         ];
+
+        // Status pipeline counts
+        $statusCounts = [];
+        foreach (UserQuery::STATUSES as $st) {
+            $statusCounts[$st] = (int) UserQuery::find()->where(['status' => $st])->count();
+        }
 
         // Recent 10 queries
         $recentQueries = UserQuery::find()
@@ -45,9 +61,24 @@ class DefaultController extends Controller
             ->limit(10)
             ->all();
 
+        // Recent portfolio projects
+        $recentProjects = Project::find()
+            ->orderBy(['id' => SORT_DESC])
+            ->limit(4)
+            ->all();
+
+        // Top featured products
+        $topProducts = Product::find()
+            ->orderBy(['is_featured' => SORT_DESC, 'id' => SORT_DESC])
+            ->limit(4)
+            ->all();
+
         return $this->render('index', [
             'kpis' => $kpis,
+            'statusCounts' => $statusCounts,
             'recentQueries' => $recentQueries,
+            'recentProjects' => $recentProjects,
+            'topProducts' => $topProducts,
         ]);
     }
 
