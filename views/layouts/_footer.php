@@ -17,7 +17,7 @@ $services = Service::active()->limit(6)->all();
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
             <!-- Brand Column (4 cols) -->
             <div class="lg:col-span-4 flex flex-col gap-6">
-                <?= $this->render('_logo', ['size' => 'lg', 'showTagline' => true]) ?>
+                <?= $this->render('_logo', ['size' => 'md', 'showTagline' => true]) ?>
                 <p class="text-sm leading-relaxed text-gray-400 mt-2 max-w-sm">
                     <?= Html::encode($settings->footer_text) ?>
                 </p>
@@ -125,7 +125,7 @@ $services = Service::active()->limit(6)->all();
         <!-- Bottom Copyright & Admin link -->
         <div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
             <div>
-                © <?= date('Y') ?> <strong class="text-gray-300 font-semibold">ICONIC INTERIORS</strong>. All rights reserved. 
+                © <?= date('Y') ?> <strong class="text-gray-300 font-semibold">SARGNEXUS PVT LTD</strong>. All rights reserved. 
                 <span class="hidden sm:inline">|</span> 
                 <span class="text-[#D4AF37]/90 font-serif font-medium">DESIGN • CREATE • INSPIRE</span>
             </div>
