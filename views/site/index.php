@@ -19,9 +19,7 @@ $this->title = $page ? $page->title : 'Luxury Interiors & Bespoke Architecture';
 $this->params['meta_description'] = $page?->meta_description;
 $stats = $page ? ($page->getExtra()['stats'] ?? []) : [];
 $seqBaseUrl = Yii::getAlias('@web') . '/images/apartment-sequence';
-$mobileVideoUrl = Yii::getAlias('@web') . '/images/Interior_construction_timelapse_…_6deebed2_1080p.mp4';
-$mobileVideoFallbackUrl = Yii::getAlias('@web') . '/images/Interior_construction_timelapse_6deebed2_1080p.mp4';
-$mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jpg';
+$mobileSeqBaseUrl = Yii::getAlias('@web') . '/images/mobile-sequence';
 ?>
 
 <!-- â•â•â• Full-Screen Animated Preloader (above everything, including header) â•â•â• -->
@@ -88,18 +86,6 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
 <section id="pre-hero-scroll">
     <div class="pre-hero-sticky">
         <canvas id="pre-hero-canvas"></canvas>
-        <video id="pre-hero-mobile-video"
-               class="pre-hero-video"
-               autoplay
-               loop
-               muted
-               playsinline
-               webkit-playsinline
-               preload="auto"
-               poster="<?= Html::encode($mobilePosterUrl) ?>">
-            <source src="<?= Html::encode($mobileVideoUrl) ?>" type="video/mp4">
-            <source src="<?= Html::encode($mobileVideoFallbackUrl) ?>" type="video/mp4">
-        </video>
         <div class="pre-hero-overlay"></div>
 
         <div class="pre-hero-content-wrap">
@@ -151,7 +137,7 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
 #pre-hero-scroll {
     position: relative;
     width: 100%;
-    height: 150vh;
+    height: 300vh;
     background-color: #050505;
     margin: 0;
     padding: 0;
@@ -171,17 +157,12 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
     left: 0;
     width: 100%;
     height: 100vh;
-    height: 100lvh;
+    height: 100dvh;
     overflow: hidden;
     background: #050505;
     display: flex;
     align-items: center;
     justify-content: center;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    will-change: transform;
 }
 
 #pre-hero-scroll #pre-hero-canvas {
@@ -192,23 +173,6 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
     height: 100%;
     display: block;
     z-index: 1;
-}
-
-#pre-hero-scroll #pre-hero-mobile-video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center center;
-    display: none;
-    z-index: 1;
-    pointer-events: none;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
 }
 
 #pre-hero-scroll .pre-hero-overlay {
@@ -606,30 +570,19 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
     50% { transform: translateY(4px); }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 640px) {
     #pre-hero-scroll {
-        height: 100vh;
-        height: 100lvh;
-        overscroll-behavior-y: none;
-    }
-    #pre-hero-scroll .pre-hero-sticky {
-        position: relative;
-        height: 100%;
-        top: auto;
-    }
-    #pre-hero-scroll #pre-hero-canvas {
-        display: none !important;
-    }
-    #pre-hero-scroll #pre-hero-mobile-video {
-        display: block !important;
-        top: -1%;
-        left: -1%;
-        width: 102%;
-        height: 102%;
-        object-fit: cover;
+        height: 250vh;
     }
     #pre-hero-scroll .pre-hero-hud {
-        display: none !important;
+        padding: 0 1.25rem;
+        bottom: 1.25rem;
+    }
+    #pre-hero-scroll .pre-hero-progress-track {
+        width: 70px;
+    }
+    #pre-hero-scroll .pre-hero-counter {
+        display: none;
     }
 }
 </style>
@@ -640,7 +593,9 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
     if (!container) return;
 
     const canvas = document.getElementById('pre-hero-canvas');
-    const mobileVideo = document.getElementById('pre-hero-mobile-video');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d', { alpha: false });
     const loader      = document.getElementById('pre-hero-loader');
     const progressBar = document.getElementById('pre-hero-bar');
     const frameNum    = document.getElementById('pre-hero-frame-num');
@@ -652,17 +607,14 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
     const cap3 = document.getElementById('ph-caption-3');
 
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
-    const TOTAL_FRAMES = 239;
-    const baseUrl = <?= json_encode($seqBaseUrl) ?>;
+    const TOTAL_FRAMES = isMobile ? 135 : 239;
+    const baseUrl = isMobile
+        ? <?= json_encode($mobileSeqBaseUrl) ?>
+        : <?= json_encode($seqBaseUrl) ?>;
     if (totalFrameNum) totalFrameNum.textContent = String(TOTAL_FRAMES);
 
-    let ctx = null;
-    if (canvas && !isMobile) {
-        ctx = canvas.getContext('2d', { alpha: false });
-    }
-
-    const images = !isMobile ? new Array(TOTAL_FRAMES) : [];
-    const loaded = !isMobile ? new Array(TOTAL_FRAMES).fill(false) : [];
+    const images = new Array(TOTAL_FRAMES);
+    const loaded = new Array(TOTAL_FRAMES).fill(false);
 
     let loadedCount   = 0;
     let sequenceReady = false;
@@ -679,21 +631,21 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
     document.documentElement.style.overflow = 'hidden';
 
     function getFrameUrl(idx) {
-        return baseUrl + '/frame_' + String(idx).padStart(6, '0') + '.webp';
+        const frameNumber = String(isMobile ? idx + 1 : idx).padStart(isMobile ? 3 : 6, '0');
+        return baseUrl + '/frame_' + frameNumber + (isMobile ? '.jpg' : '.webp');
     }
 
-    // â”€â”€ Reveal sequence after all frames loaded / video ready â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Reveal sequence as soon as initial frames are ready ───────────────
     function revealSequence() {
         if (sequenceReady) return;
         sequenceReady = true;
 
-        // Desktop: draw frame 0 on canvas
-        if (!isMobile && canvas && ctx) {
-            resizeCanvas();
-            drawFrame(0);
-        }
+        // Draw frame 0 on canvas first and initialize progress bar
+        resizeCanvas();
+        drawFrame(0);
+        onScroll();
 
-        // Short pause so user sees completion flash, then fade out loader
+        // Short pause so user sees smooth transition, then fade out loader
         setTimeout(function() {
             if (loader) loader.classList.add('is-hidden');
             // Show header and restore scroll after preloader fades out
@@ -703,13 +655,17 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
                     siteHeader.style.display = '';
                     siteHeader.style.animation = 'phlHeaderFadeIn 0.6s ease-out forwards';
                 }
-            }, 600);
-        }, 520);
+            }, 500);
+        }, 350);
     }
 
-    // â”€â”€ Canvas helpers (Desktop only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Safety fallback: ensure scroll is unlocked after max 1.5s
+    setTimeout(function() {
+        if (!sequenceReady) revealSequence();
+    }, 1500);
+
+    // ── Canvas helpers ─────────────────────────────────────────────────
     function resizeCanvas() {
-        if (isMobile || !canvas || !ctx) return;
         dpr = Math.min(window.devicePixelRatio || 1, 2);
         const w = window.innerWidth;
         const h = window.innerHeight;
@@ -720,12 +676,9 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
         drawFrame(currentFrame);
     }
 
-    if (!isMobile) {
-        window.addEventListener('resize', resizeCanvas, { passive: true });
-    }
+    window.addEventListener('resize', resizeCanvas, { passive: true });
 
     function drawFrame(frameIndex) {
-        if (isMobile || !canvas || !ctx) return;
         let img = images[frameIndex];
         if (!img || !loaded[frameIndex]) {
             for (let i = frameIndex - 1; i >= 0; i--) {
@@ -751,111 +704,44 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
         ctx.drawImage(img, dx, dy, dw, dh);
     }
 
-    // â”€â”€ Preloading: Mobile (Video only, NO frames) vs Desktop (Frames) â”€
-    if (isMobile) {
-        // Mobile view: DO NOT use frames, use MP4 video
-        let mobileRevealed = false;
-        function finishMobileInit() {
-            if (mobileRevealed) return;
-            mobileRevealed = true;
-            if (mobileVideo) {
-                mobileVideo.play().catch(function() {});
-            }
+    // ── Preload frames silently in batches ──────────────────────────────
+    const INITIAL_REVEAL_THRESHOLD = Math.min(8, TOTAL_FRAMES);
+    function checkReveal() {
+        if (!sequenceReady && (loadedCount >= INITIAL_REVEAL_THRESHOLD || loadedCount >= TOTAL_FRAMES)) {
             revealSequence();
         }
-
-        if (mobileVideo) {
-            if (mobileVideo.readyState >= 2) { // HAVE_CURRENT_DATA or higher
-                setTimeout(finishMobileInit, 300);
-            } else {
-                mobileVideo.addEventListener('loadeddata', function() {
-                    setTimeout(finishMobileInit, 200);
-                }, { once: true });
-                mobileVideo.addEventListener('canplay', function() {
-                    finishMobileInit();
-                }, { once: true });
-                // Safety fallback timeout to prevent user lockup
-                setTimeout(finishMobileInit, 2200);
-            }
-
-            // Ensure playback on user gesture if restricted by device policy
-            ['touchstart', 'scroll', 'click'].forEach(function(ev) {
-                window.addEventListener(ev, function() {
-                    if (mobileVideo && mobileVideo.paused) {
-                        mobileVideo.play().catch(function() {});
-                    }
-                }, { once: true, passive: true });
-            });
-        } else {
-            finishMobileInit();
-        }
-
-        // â”€â”€ Auto-cycling captions on mobile (timer-based, not scroll) â”€â”€
-        (function mobileCaptionCycle() {
-            var captions = [cap1, cap2, cap3];
-            var SHOW_MS  = 2000;  // how long each caption stays visible
-            var GAP_MS   = 500;   // pause between captions
-            var idx      = 0;
-            var cycleTimer = null;
-
-            function clearAll() {
-                captions.forEach(function(c) { if (c) c.classList.remove('is-active'); });
-            }
-
-            function showNext() {
-                clearAll();
-                if (idx >= captions.length) {
-                    idx = 0;
-                }
-                var el = captions[idx];
-                if (el) el.classList.add('is-active');
-                idx++;
-                cycleTimer = setTimeout(function() {
-                    clearAll();
-                    cycleTimer = setTimeout(showNext, GAP_MS);
-                }, SHOW_MS);
-            }
-
-            // Wait for preloader to fade, then start cycling
-            var waitForReveal = setInterval(function() {
-                if (sequenceReady) {
-                    clearInterval(waitForReveal);
-                    setTimeout(showNext, 1200); // start after preloader animation
-                }
-            }, 100);
-        })();
-    } else {
-        // Desktop view: Preload all 239 frames silently
-        function preloadFrame(index) {
-            if (images[index]) return;
-            const img = new Image();
-            img.onload = function() {
-                loaded[index] = true;
-                loadedCount++;
-                if (loadedCount >= TOTAL_FRAMES) revealSequence();
-            };
-            img.onerror = function() {
-                loadedCount++;
-                if (loadedCount >= TOTAL_FRAMES) revealSequence();
-            };
-            img.src = getFrameUrl(index);
-            images[index] = img;
-        }
-
-        (function kickoffPreload() {
-            const BATCH = 20;  // concurrent requests per tick
-            let start = 0;
-            function loadBatch() {
-                const end = Math.min(start + BATCH, TOTAL_FRAMES);
-                for (let i = start; i < end; i++) preloadFrame(i);
-                start = end;
-                if (start < TOTAL_FRAMES) setTimeout(loadBatch, 60);
-            }
-            loadBatch();
-        })();
     }
 
-    // â”€â”€ Scroll scrubbing / progress tracking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    function preloadFrame(index) {
+        if (images[index]) return;
+        const img = new Image();
+        img.onload = function() {
+            loaded[index] = true;
+            loadedCount++;
+            checkReveal();
+        };
+        img.onerror = function() {
+            loadedCount++;
+            checkReveal();
+        };
+        img.src = getFrameUrl(index);
+        images[index] = img;
+    }
+
+    // Kick off all frames in staggered batches to avoid network storm
+    (function kickoffPreload() {
+        const BATCH = 20;  // concurrent requests per tick
+        let start = 0;
+        function loadBatch() {
+            const end = Math.min(start + BATCH, TOTAL_FRAMES);
+            for (let i = start; i < end; i++) preloadFrame(i);
+            start = end;
+            if (start < TOTAL_FRAMES) setTimeout(loadBatch, 60);
+        }
+        loadBatch();
+    })();
+
+    // ── Scroll scrubbing (active only after reveal) ────────────────────
     function onScroll() {
         if (!sequenceReady) return;
 
@@ -866,28 +752,24 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
             progress = Math.min(Math.max(-rect.top / maxScroll, 0), 1);
         }
 
-        if (!isMobile) {
-            targetFrame = Math.min(Math.max(Math.floor(progress * (TOTAL_FRAMES - 1)), 0), TOTAL_FRAMES - 1);
-        }
+        targetFrame = Math.min(Math.max(Math.floor(progress * (TOTAL_FRAMES - 1)), 0), TOTAL_FRAMES - 1);
 
         if (!isTicking) {
             isTicking = true;
             requestAnimationFrame(function() {
-                if (!isMobile && currentFrame !== targetFrame) {
+                if (currentFrame !== targetFrame) {
                     currentFrame = targetFrame;
                     drawFrame(currentFrame);
                 }
-                if (progressBar && !isMobile) progressBar.style.width = (progress * 100).toFixed(1) + '%';
-                if (frameNum && !isMobile) frameNum.textContent = String(currentFrame + 1).padStart(3, '0');
+                if (progressBar) progressBar.style.width = (progress * 100).toFixed(1) + '%';
+                if (frameNum)    frameNum.textContent = String(currentFrame + 1).padStart(3, '0');
 
-                if (!isMobile) {
-                    var setCaption = function(el, on) {
-                        el && (on ? el.classList.add('is-active') : el.classList.remove('is-active'));
-                    };
-                    setCaption(cap1, progress >= 0.02 && progress <= 0.28);
-                    setCaption(cap2, progress >= 0.35 && progress <= 0.64);
-                    setCaption(cap3, progress >= 0.70 && progress <= 0.94);
-                }
+                const setCaption = function(el, on) {
+                    el && (on ? el.classList.add('is-active') : el.classList.remove('is-active'));
+                };
+                setCaption(cap1, progress >= 0.02 && progress <= 0.28);
+                setCaption(cap2, progress >= 0.35 && progress <= 0.64);
+                setCaption(cap3, progress >= 0.70 && progress <= 0.94);
 
                 isTicking = false;
             });
@@ -895,9 +777,7 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    if (!isMobile) {
-        resizeCanvas();
-    }
+    resizeCanvas();
 
     if (scrollBtn) {
         scrollBtn.addEventListener('click', function() {
@@ -955,7 +835,9 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
                 
                 <div class="stage aspect-[16/9] w-full gold-frame shadow-2xl relative select-none"
                      :data-light="lightingMode"
-                     :class="isSwapping ? 'is-swapping' : ''">
+                     :class="[isSwapping ? 'is-swapping' : '', showBeforeAfter ? 'is-comparing' : '']"
+                     :style="showBeforeAfter ? '--pos: ' + comparePos + '%' : ''"
+                     @pointerdown="startCompareDrag($event)">
                     
                     <!-- Before Layer (for comparison slider or toggle) -->
                     <img :src="currentPreset.before" 
@@ -981,7 +863,8 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
                     <!-- Range input slider for Before/After -->
                     <input x-show="showBeforeAfter" 
                            type="range" min="0" max="100" 
-                           x-model="comparePos" 
+                           x-model.number="comparePos" 
+                           @input="comparePos = Number($event.target.value)"
                            class="compare-range" 
                            aria-label="Before and after split slider">
 
@@ -998,13 +881,13 @@ $mobilePosterUrl = Yii::getAlias('@web') . '/images/mobile-sequence/frame_001.jp
                     <div class="vignette z-20"></div>
 
                     <!-- Bottom Bar Over Image (Style info & quick book) -->
-                    <div class="absolute bottom-0 inset-x-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-30 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
-                        <div>
+                    <div class="absolute bottom-0 inset-x-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-30 pointer-events-none flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
+                        <div class="pointer-events-auto">
                             <span class="text-[10px] sm:text-xs font-bold tracking-[0.22em] text-[#D4AF37] uppercase" x-text="currentPreset.room"></span>
                             <h2 class="text-xl sm:text-2xl font-serif font-bold text-white tracking-wide" x-text="currentPreset.style"></h2>
                             <p class="text-xs text-gray-300 max-w-md hidden sm:block mt-1 font-light" x-text="currentPreset.tagline"></p>
                         </div>
-                        <div class="flex items-center gap-3 shrink-0">
+                        <div class="flex items-center gap-3 shrink-0 pointer-events-auto">
                             <!-- Before/After Toggle -->
                             <button type="button" 
                                     @click="toggleBeforeAfter()" 

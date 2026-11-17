@@ -83,9 +83,7 @@ $gallery = $project->getGallery();
         <div class="stage is-comparing aspect-[16/9] w-full gold-frame shadow-2xl relative select-none"
              x-data="beforeAfterSlider(50)"
              :style="'--pos: ' + pos + '%'"
-             @touchstart.passive="false"
-             @touchstart="startDrag($event)"
-             @mousedown="startDrag($event)">
+             @pointerdown="startDrag($event)">
             
             <!-- Before Image -->
             <img src="<?= Media::url($project->before_image) ?>" 

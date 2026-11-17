@@ -158,6 +158,9 @@ window.heroCustomizer = function(initialPresets = [], defaultRoom = 'Living Loun
             };
 
             const onEnd = () => {
+                if (e.pointerId !== undefined && stage.releasePointerCapture) {
+                    try { stage.releasePointerCapture(e.pointerId); } catch (err) {}
+                }
                 window.removeEventListener('pointermove', onMove);
                 window.removeEventListener('pointerup', onEnd);
                 window.removeEventListener('pointercancel', onEnd);
@@ -167,6 +170,10 @@ window.heroCustomizer = function(initialPresets = [], defaultRoom = 'Living Loun
                 window.removeEventListener('mousemove', onMove);
                 window.removeEventListener('mouseup', onEnd);
             };
+
+            if (e.pointerId !== undefined && stage.setPointerCapture) {
+                try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+            }
 
             window.addEventListener('pointermove', onMove, { passive: false });
             window.addEventListener('pointerup', onEnd, { once: true });
@@ -234,6 +241,9 @@ window.beforeAfterSlider = function(initialPos = 50) {
             };
 
             const onEnd = () => {
+                if (e.pointerId !== undefined && stage.releasePointerCapture) {
+                    try { stage.releasePointerCapture(e.pointerId); } catch (err) {}
+                }
                 window.removeEventListener('pointermove', onMove);
                 window.removeEventListener('pointerup', onEnd);
                 window.removeEventListener('pointercancel', onEnd);
@@ -243,6 +253,10 @@ window.beforeAfterSlider = function(initialPos = 50) {
                 window.removeEventListener('mousemove', onMove);
                 window.removeEventListener('mouseup', onEnd);
             };
+
+            if (e.pointerId !== undefined && stage.setPointerCapture) {
+                try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+            }
 
             window.addEventListener('pointermove', onMove, { passive: false });
             window.addEventListener('pointerup', onEnd, { once: true });
