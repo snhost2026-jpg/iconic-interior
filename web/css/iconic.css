@@ -382,3 +382,354 @@ input[type=range].lux-range::-moz-range-thumb { width: 20px; height: 20px; borde
 
 /* Timeline */
 .timeline-line { background: linear-gradient(var(--gold), rgba(212,175,55,.05)); }
+
+/* ==========================================================================
+   ICONIC INTERIORS — LIGHT THEME / WHITE THEME SYSTEM
+   APPLIED IF AND ONLY IF USER SWITCHES TO LIGHT THEME (html.theme-light)
+   ========================================================================== */
+
+/* 1. Global CSS Variables for Light / White Theme */
+html.theme-light {
+    --obsidian: #FAF8F5;
+    --charcoal: #F2EFE9;
+    --graphite: #EAE5DC;
+    --bg-site: #FAF8F5;
+    --bg-card: #FFFFFF;
+    --bg-footer: #F5F2EB;
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --text-muted: #6B7280;
+    --border-light: rgba(212, 175, 55, 0.22);
+    color-scheme: light;
+}
+
+/* 2. Body background and base text in white theme */
+html.theme-light body {
+    background-color: #FAF8F5 !important;
+    color: #111827 !important;
+}
+
+/* 3. CORE REQUIREMENT: In white theme, ALL white text classes BECOME BLACK */
+html.theme-light .text-white,
+html.theme-light .text-ivory,
+html.theme-light .text-\[\#F9FAFB\],
+html.theme-light .text-zinc-100,
+html.theme-light .text-zinc-200,
+html.theme-light .text-gray-100,
+html.theme-light .text-gray-200,
+html.theme-light .text-slate-100,
+html.theme-light .text-slate-200 {
+    color: #111827 !important;
+}
+
+/* 4. Muted light-gray text becomes readable dark charcoal/gray */
+html.theme-light .text-gray-300,
+html.theme-light .text-gray-400,
+html.theme-light .text-zinc-300,
+html.theme-light .text-zinc-400,
+html.theme-light .text-stone-300,
+html.theme-light .text-stone-400,
+html.theme-light .text-\[\#C8B89A\],
+html.theme-light .text-\[\#A89060\] {
+    color: #4B5563 !important;
+}
+
+/* 5. Headings in white theme are solid black */
+html.theme-light h1:not(#pre-hero-scroll *):not(.phl *),
+html.theme-light h2:not(#pre-hero-scroll *):not(.phl *),
+html.theme-light h3:not(#pre-hero-scroll *):not(.phl *),
+html.theme-light h4:not(#pre-hero-scroll *):not(.phl *),
+html.theme-light h5:not(#pre-hero-scroll *):not(.phl *),
+html.theme-light h6:not(#pre-hero-scroll *):not(.phl *) {
+    color: #111827;
+}
+
+/* 6. Section backgrounds: dark backgrounds become light luxury backgrounds */
+html.theme-light .bg-\[\#0A0A0A\]:not(#pre-hero-scroll *):not(.phl *),
+html.theme-light .bg-\[\#080808\]:not(#pre-hero-scroll *):not(.phl *),
+html.theme-light .bg-\[\#0C0C0C\],
+html.theme-light .bg-\[\#0B0B0B\],
+html.theme-light .bg-\[\#090909\],
+html.theme-light .bg-\[\#121212\],
+html.theme-light .bg-\[\#0F0F0F\],
+html.theme-light .bg-\[\#161616\],
+html.theme-light .bg-\[\#141414\],
+html.theme-light .bg-\[\#1C1810\] {
+    background-color: #FAF8F5 !important;
+}
+
+/* 7. Card & surface styling in light theme */
+html.theme-light .card-lux,
+html.theme-light .glass,
+html.theme-light .bg-white\/\[0\.02\],
+html.theme-light .bg-white\/\[0\.035\],
+html.theme-light .bg-white\/5 {
+    background: #FFFFFF !important;
+    border-color: rgba(212, 175, 55, 0.22) !important;
+    box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.theme-light .card-lux:hover {
+    box-shadow: 0 20px 40px -15px rgba(212, 175, 55, 0.28), 0 0 0 1px rgba(212, 175, 55, 0.45) !important;
+}
+
+html.theme-light .chip {
+    border-color: rgba(212, 175, 55, 0.3) !important;
+    color: #374151 !important;
+    background: rgba(212, 175, 55, 0.06) !important;
+}
+html.theme-light .chip:hover {
+    border-color: #D4AF37 !important;
+    color: #111827 !important;
+}
+
+/* 8. Preset cards & option cards in customizer / estimator */
+html.theme-light .preset,
+html.theme-light .opt-card {
+    background: #FFFFFF !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    color: #111827 !important;
+}
+
+html.theme-light .preset:hover,
+html.theme-light .opt-card:hover {
+    border-color: #D4AF37 !important;
+    background: rgba(212, 175, 55, 0.05) !important;
+}
+
+html.theme-light .preset.is-active,
+html.theme-light .opt-card.is-active {
+    border-color: #D4AF37 !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 10px 25px -5px rgba(212, 175, 55, 0.35), inset 0 0 0 1px #D4AF37 !important;
+}
+
+/* 9. Segmented controls in light theme */
+html.theme-light .segmented {
+    background: #EDEAE1 !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+html.theme-light .segmented button {
+    color: #4B5563 !important;
+}
+html.theme-light .segmented button.is-active {
+    background: #FFFFFF !important;
+    color: #111827 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 10. Forms, inputs, selects, textareas */
+html.theme-light .field-input,
+html.theme-light .lux-form input[type=text],
+html.theme-light .lux-form input[type=email],
+html.theme-light .lux-form input[type=tel],
+html.theme-light .lux-form input[type=number],
+html.theme-light .lux-form input[type=password],
+html.theme-light .lux-form select,
+html.theme-light .lux-form textarea {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    color: #111827 !important;
+}
+html.theme-light .lux-form select option {
+    background: #FFFFFF !important;
+    color: #111827 !important;
+}
+html.theme-light .lux-form label.control-label,
+html.theme-light .lux-form .lux-label {
+    color: #374151 !important;
+}
+
+/* 11. Modal dialog card */
+html.theme-light [role="dialog"] .relative.w-full {
+    background: #FFFFFF !important;
+    border-color: rgba(212, 175, 55, 0.35) !important;
+    box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* 12. Site header and navigation */
+html.theme-light .site-header {
+    background: transparent !important;
+    border-bottom-color: rgba(212, 175, 55, 0.15) !important;
+}
+html.theme-light .site-header.is-scrolled {
+    background: transparent !important;
+    border-bottom-color: rgba(212, 175, 55, 0.2) !important;
+}
+html.theme-light .site-header.is-blurred {
+    background: rgba(250, 248, 245, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+}
+html.theme-light .site-header-mobile-drawer {
+    background: rgba(250, 248, 245, 0.96) !important;
+    border-bottom-color: rgba(212, 175, 55, 0.2) !important;
+}
+html.theme-light .site-header .nav-link {
+    color: #374151 !important;
+}
+html.theme-light .site-header .nav-link:hover,
+html.theme-light .site-header .nav-link.active {
+    color: #D4AF37 !important;
+}
+
+/* 13. Footer in light theme */
+html.theme-light footer {
+    background-color: #F4F0E6 !important;
+    border-top: 1px solid rgba(212, 175, 55, 0.3) !important;
+    color: #4B5563 !important;
+}
+html.theme-light footer h4 {
+    color: #111827 !important;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.45) !important;
+}
+html.theme-light footer a {
+    color: #374151 !important;
+}
+html.theme-light footer a:hover {
+    color: #D4AF37 !important;
+}
+
+/* 14. Subtle border overrides */
+html.theme-light .border-white\/5,
+html.theme-light .border-white\/10,
+html.theme-light .border-white\/15,
+html.theme-light .border-white\/20 {
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* 15. Ghost button */
+html.theme-light .btn-ghost {
+    border-color: rgba(212, 175, 55, 0.6) !important;
+    color: #111827 !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+}
+html.theme-light .btn-ghost:hover {
+    background: rgba(212, 175, 55, 0.15) !important;
+    color: #8A6E2F !important;
+    border-color: #D4AF37 !important;
+}
+
+/* 16. Prose / rich text in light theme */
+html.theme-light .prose-lux p {
+    color: #374151 !important;
+}
+html.theme-light .prose-lux h2,
+html.theme-light .prose-lux h3 {
+    color: #111827 !important;
+}
+html.theme-light .prose-lux strong {
+    color: #111827 !important;
+}
+html.theme-light .prose-lux ul li {
+    color: #374151 !important;
+}
+
+/* 17. EXCEPTIONS — elements where white or dark text must be strictly preserved */
+/* Gold button */
+html.theme-light .btn-gold,
+html.theme-light .btn-gold * {
+    color: #141008 !important;
+}
+
+/* WhatsApp concierge button and links */
+html.theme-light .pulse-ring,
+html.theme-light .pulse-ring *,
+html.theme-light [class*="bg-\[\#25D366\]"],
+html.theme-light [class*="bg-\[\#25D366\]"] * {
+    color: #FFFFFF !important;
+}
+
+/* ==========================================================================
+   INK BLEED THEME TRANSITION
+   ========================================================================== */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+    z-index: 1;
+}
+
+::view-transition-new(root) {
+    z-index: 9999999;
+}
+
+/* Expanding Gold Ink Ripple Wave */
+.ink-bleed-ripple {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000000;
+    transform: translate(-50%, -50%) scale(0.2);
+    border: 2px solid #D4AF37;
+    box-shadow: 0 0 35px rgba(212, 175, 55, 0.7), inset 0 0 25px rgba(212, 175, 55, 0.5);
+    animation: inkRippleExpand 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes inkRippleExpand {
+    0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(22);
+        opacity: 0;
+    }
+}
+
+/* Ink Bleed Fallback Overlay for browsers without View Transitions */
+.ink-bleed-fallback-overlay {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 999999;
+    transform: scale(0);
+    opacity: 1;
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease-out;
+}
+
+.ink-bleed-fallback-overlay.is-active {
+    transform: scale(1);
+}
+
+.ink-bleed-fallback-overlay.is-fading {
+    opacity: 0;
+}
+
+
+/* Scoped inside #pre-hero-scroll 3D video sequence (canvas is dark) */
+#pre-hero-scroll .pre-hero-title,
+#pre-hero-scroll .pre-hero-title * {
+    color: #FFFFFF !important;
+}
+#pre-hero-scroll .pre-hero-sub {
+    color: rgba(255, 255, 255, 0.72) !important;
+}
+#pre-hero-scroll .pre-hero-badge {
+    color: #D4AF37 !important;
+}
+#pre-hero-scroll .pre-hero-scroll-hint {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Preloader */
+.phl-title, .phl-title * {
+    color: #FFFFFF !important;
+}
+.phl-tagline {
+    color: #D4AF37 !important;
+}
+
+/* Dark alerts / toasts */
+[class*="bg-emerald-950"],
+[class*="bg-emerald-950"] *,
+[class*="bg-red-950"],
+[class*="bg-red-950"] * {
+    color: #FFFFFF !important;
+}
+

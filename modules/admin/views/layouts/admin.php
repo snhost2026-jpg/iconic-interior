@@ -105,8 +105,56 @@ $navSections = [
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
 
+    <script>
+        (function() {
+            var savedTheme = localStorage.getItem('iconic_theme');
+            if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('theme-light');
+            } else {
+                document.documentElement.classList.add('dark');
+                document.documentElement.classList.remove('theme-light');
+            }
+        })();
+    </script>
+
     <style>
-        body { background: #0A0A0A; color: #F9FAFB; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0A0A0A; color: #F9FAFB; }
+        html.theme-light body { background: #F8F7F4; color: #111827; }
+
+        /* Light Theme Overrides for Admin Panel (Active IF AND ONLY IF theme is light) */
+        html.theme-light .bg-\[\#0A0A0A\],
+        html.theme-light .bg-\[\#0F0F0F\],
+        html.theme-light .bg-\[\#0E0E0E\],
+        html.theme-light .bg-\[\#141414\] {
+            background-color: #FFFFFF !important;
+        }
+        html.theme-light .text-white {
+            color: #111827 !important;
+        }
+        html.theme-light .text-gray-300,
+        html.theme-light .text-gray-400 {
+            color: #4B5563 !important;
+        }
+        html.theme-light .border-white\/5,
+        html.theme-light .border-white\/10 {
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        html.theme-light .lux-card {
+            background: #FFFFFF !important;
+            border: 1px solid rgba(0,0,0,0.08) !important;
+            box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05) !important;
+        }
+        html.theme-light .table-lux th {
+            background: #F3F4F6 !important;
+            color: #4B5563 !important;
+            border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+        }
+        html.theme-light .table-lux td {
+            color: #1F2937 !important;
+            border-bottom: 1px solid rgba(0,0,0,0.04) !important;
+        }
+
         .lux-card { background: linear-gradient(170deg, #161616 0%, #0f0f0f 100%); border: 1px solid rgba(255,255,255,.07); border-radius: 1.25rem; }
         .table-lux { width: 100%; border-collapse: separate; border-spacing: 0; }
         .table-lux th { background: #141414; color: #9CA3AF; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 700; padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; }
@@ -123,7 +171,29 @@ $navSections = [
     </style>
     <?php $this->head() ?>
 </head>
-<body class="h-full bg-[#0A0A0A] flex overflow-hidden" x-data="{ sidebarOpen: false, quickAddOpen: false }">
+<body class="h-full flex overflow-hidden" 
+      x-data="{ 
+          sidebarOpen: false, 
+          quickAddOpen: false,
+          isDark: document.documentElement.classList.contains('dark'),
+          toggleTheme(e) {
+              if (window.inkBleedToggleTheme) {
+                  window.inkBleedToggleTheme(e);
+              } else {
+                  if (this.isDark) {
+                      document.documentElement.classList.remove('dark');
+                      document.documentElement.classList.add('theme-light');
+                      localStorage.setItem('iconic_theme', 'light');
+                  } else {
+                      document.documentElement.classList.add('dark');
+                      document.documentElement.classList.remove('theme-light');
+                      localStorage.setItem('iconic_theme', 'dark');
+                  }
+                  window.dispatchEvent(new CustomEvent('theme-changed', { detail: this.isDark ? 'light' : 'dark' }));
+              }
+          }
+      }"
+      @theme-changed.window="isDark = ($event.detail === 'dark')">
 <?php $this->beginBody() ?>
 
     <!-- Mobile Sidebar Backdrop Overlay -->
@@ -239,8 +309,22 @@ $navSections = [
                 </h1>
             </div>
 
-            <div class="flex items-center gap-3 sm:gap-4 text-xs">
+            <div class="flex items-center gap-2 sm:gap-3 text-xs">
                 
+                <!-- Theme Toggle Button -->
+                <button type="button" 
+                        @click="toggleTheme($event)" 
+                        class="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[#D4AF37] flex items-center gap-1.5 transition-colors cursor-pointer"
+                        :title="isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'">
+                    <svg x-show="isDark" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <svg x-show="!isDark" x-cloak class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                    <span class="hidden sm:inline font-semibold" x-text="isDark ? 'Light' : 'Dark'"></span>
+                </button>
+
                 <!-- Quick Add Dropdown -->
                 <div class="relative" @click.away="quickAddOpen = false">
                     <button type="button" 

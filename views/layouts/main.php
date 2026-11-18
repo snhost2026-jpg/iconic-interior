@@ -80,6 +80,20 @@ $metaDesc = $this->params['meta_description'] ?? $settings->meta_description;
     };
     </script>
 
+    <!-- Immediate Theme Initialization Script (Prevents FOUC) -->
+    <script>
+        (function() {
+            var savedTheme = localStorage.getItem('iconic_theme');
+            if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('theme-light');
+            } else {
+                document.documentElement.classList.add('dark');
+                document.documentElement.classList.remove('theme-light');
+            }
+        })();
+    </script>
+
     <?php $this->head() ?>
 </head>
 <body class="min-h-screen bg-[#0A0A0A] text-[#F9FAFB] font-sans antialiased selection:bg-[#D4AF37]/30 selection:text-white grain flex flex-col">

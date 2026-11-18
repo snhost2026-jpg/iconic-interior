@@ -20,7 +20,27 @@ $navItems = [
 ?>
 
 <header class="site-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-white/5 py-3 md:py-4 px-4 sm:px-6 lg:px-8 bg-transparent"
-        x-data="{ mobileOpen: false }">
+        x-data="{ 
+            mobileOpen: false, 
+            isDark: document.documentElement.classList.contains('dark'),
+            toggleTheme(e) {
+                if (window.inkBleedToggleTheme) {
+                    window.inkBleedToggleTheme(e);
+                } else {
+                    if (this.isDark) {
+                        document.documentElement.classList.remove('dark');
+                        document.documentElement.classList.add('theme-light');
+                        localStorage.setItem('iconic_theme', 'light');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        document.documentElement.classList.remove('theme-light');
+                        localStorage.setItem('iconic_theme', 'dark');
+                    }
+                    window.dispatchEvent(new CustomEvent('theme-changed', { detail: this.isDark ? 'light' : 'dark' }));
+                }
+            }
+        }"
+        @theme-changed.window="isDark = ($event.detail === 'dark')">
     <div class="max-w-7xl mx-auto flex items-center justify-between gap-6">
         <!-- Logo -->
         <?= $this->render('_logo', ['size' => 'md', 'showTagline' => true]) ?>
@@ -36,7 +56,23 @@ $navItems = [
         </nav>
 
         <!-- Right Quick Actions -->
-        <div class="hidden sm:flex items-center gap-4">
+        <div class="hidden sm:flex items-center gap-3 xl:gap-4">
+            <!-- Theme Toggle Button (Light / Dark) with Ink Bleed Effect -->
+            <button type="button" 
+                    @click="toggleTheme($event)"
+                    class="p-2.5 rounded-full border border-white/10 hover:border-[#D4AF37]/60 text-[#D4AF37] hover:bg-white/[0.04] transition-all flex items-center justify-center group relative cursor-pointer"
+                    :title="isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'"
+                    aria-label="Toggle Theme">
+                <!-- Sun Icon (shown in Dark mode to switch to Light) -->
+                <svg x-show="isDark" class="w-4 h-4 transition-transform group-hover:rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <!-- Moon Icon (shown in Light mode to switch to Dark) -->
+                <svg x-show="!isDark" x-cloak class="w-4 h-4 transition-transform group-hover:-rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+            </button>
+
             <!-- Phone pill -->
             <a href="<?= SiteSettings::telHref($settings->phone_primary) ?>" 
                class="hidden xl:inline-flex items-center gap-2 text-xs font-semibold tracking-wider text-gray-300 hover:text-[#D4AF37] transition-colors py-2 px-3.5 rounded-full border border-white/10 hover:border-[#D4AF37]/50 bg-white/[0.02]">
@@ -71,6 +107,19 @@ $navItems = [
 
         <!-- Mobile Quick Actions & Menu Trigger -->
         <div class="lg:hidden flex items-center gap-2">
+            <!-- Mobile Theme Toggle -->
+            <button type="button" 
+                    @click="toggleTheme($event)"
+                    class="p-2 rounded-lg border border-white/10 text-[#D4AF37] hover:border-[#D4AF37]/60 flex items-center justify-center"
+                    :title="isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'">
+                <svg x-show="isDark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <svg x-show="!isDark" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+            </button>
+
             <!-- Mobile Cart Icon -->
             <a href="<?= Url::to(['/product/cart']) ?>" 
                class="relative p-2 rounded-lg border border-white/10 text-gray-300 hover:text-[#D4AF37] flex items-center justify-center"
@@ -107,7 +156,7 @@ $navItems = [
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 -translate-y-4"
-         class="site-header-mobile-drawer lg:hidden absolute top-full left-0 right-0 bg-transparent border-b border-white/10 shadow-2xl p-6 flex flex-col gap-4">
+         class="site-header-mobile-drawer lg:hidden absolute top-full left-0 right-0 bg-[#0A0A0A]/95 border-b border-white/10 shadow-2xl p-6 flex flex-col gap-4">
         
         <div class="flex flex-col gap-2">
             <?php foreach ($navItems as $item): ?>
@@ -132,6 +181,23 @@ $navItems = [
                     <?= $cartCount ?>
                 </span>
             </a>
+
+            <!-- Mobile Drawer Theme Toggle Row -->
+            <button type="button" 
+                    @click="toggleTheme($event)"
+                    class="px-4 py-3 rounded-lg text-sm font-semibold tracking-wider uppercase transition-colors flex items-center justify-between border border-white/10 text-gray-300 hover:text-white bg-white/[0.02] cursor-pointer">
+                <span class="flex items-center gap-2">
+                    <span x-show="isDark" class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        <span>Switch to Light Theme</span>
+                    </span>
+                    <span x-show="!isDark" x-cloak class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                        <span>Switch to Dark Theme</span>
+                    </span>
+                </span>
+                <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-white/10 text-[#D4AF37]" x-text="isDark ? 'Dark' : 'Light'"></span>
+            </button>
         </div>
 
         <div class="pt-4 border-t border-white/10 flex flex-col gap-3">

@@ -522,3 +522,106 @@ window.addToCartWithQty = function(productId, qty) {
 window.addToCartHP = function(productId) {
     return window.addToCart(productId, 1);
 };
+
+/**
+ * Ink Bleed Theme Changer
+ * Fluid circular expanding reveal originating from the click coordinate (e.clientX, e.clientY)
+ * Uses native View Transitions API with expanding clip-path circle + golden ink ripple wave
+ */
+window.inkBleedToggleTheme = function(event) {
+    const isDark = document.documentElement.classList.contains('dark');
+    const newTheme = isDark ? 'light' : 'dark';
+
+    // Core theme toggle function
+    const applyTheme = () => {
+        if (newTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('theme-light');
+            localStorage.setItem('iconic_theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('theme-light');
+            localStorage.setItem('iconic_theme', 'dark');
+        }
+        window.dispatchEvent(new CustomEvent('theme-changed', { detail: newTheme }));
+    };
+
+    // Determine origin coordinate (x, y)
+    let x = window.innerWidth / 2;
+    let y = window.innerHeight / 2;
+    if (event && event.clientX !== undefined && event.clientY !== undefined && (event.clientX !== 0 || event.clientY !== 0)) {
+        x = event.clientX;
+        y = event.clientY;
+    } else if (event && event.currentTarget) {
+        const rect = event.currentTarget.getBoundingClientRect();
+        x = rect.left + rect.width / 2;
+        y = rect.top + rect.height / 2;
+    }
+
+    // Distance to the farthest viewport corner from (x, y)
+    const endRadius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+    );
+
+    // Spawn expanding golden ink ripple ring
+    const ripple = document.createElement('div');
+    ripple.className = 'ink-bleed-ripple';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    document.body.appendChild(ripple);
+    setTimeout(() => {
+        if (ripple.parentNode) ripple.remove();
+    }, 850);
+
+    // If View Transitions API is supported (Chrome 111+, Edge, Safari 18+):
+    if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const transition = document.startViewTransition(() => {
+            applyTheme();
+        });
+
+        transition.ready.then(() => {
+            const clipPath = [
+                `circle(0px at ${x}px ${y}px)`,
+                `circle(${endRadius}px at ${x}px ${y}px)`
+            ];
+            document.documentElement.animate(
+                {
+                    clipPath: clipPath
+                },
+                {
+                    duration: 650,
+                    easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+                    pseudoElement: '::view-transition-new(root)'
+                }
+            );
+        });
+    } else {
+        // Universal fallback for browsers without startViewTransition
+        const inkDrop = document.createElement('div');
+        inkDrop.className = 'ink-bleed-fallback-overlay';
+        inkDrop.style.left = x + 'px';
+        inkDrop.style.top = y + 'px';
+        inkDrop.style.backgroundColor = newTheme === 'light' ? '#FAF8F5' : '#0A0A0A';
+        document.body.appendChild(inkDrop);
+
+        const maxDim = endRadius * 2.2;
+        inkDrop.style.width = maxDim + 'px';
+        inkDrop.style.height = maxDim + 'px';
+        inkDrop.style.marginLeft = -(maxDim / 2) + 'px';
+        inkDrop.style.marginTop = -(maxDim / 2) + 'px';
+
+        requestAnimationFrame(() => {
+            inkDrop.classList.add('is-active');
+            setTimeout(() => {
+                applyTheme();
+                setTimeout(() => {
+                    inkDrop.classList.add('is-fading');
+                    setTimeout(() => {
+                        if (inkDrop.parentNode) inkDrop.remove();
+                    }, 400);
+                }, 80);
+            }, 320);
+        });
+    }
+};
