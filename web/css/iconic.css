@@ -640,6 +640,35 @@ html.theme-light [class*="bg-\[\#25D366\]"] * {
     color: #FFFFFF !important;
 }
 
+/* Persistent mobile conversion bar */
+.mobile-conversion-bar {
+    border-top: 1px solid rgba(180, 146, 90, 0.35);
+    background: rgba(18, 18, 18, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28);
+}
+.mobile-site-visit-cta {
+    border: 1px solid #B4925A;
+    background: #B4925A;
+    color: #1C1B19;
+}
+.mobile-estimate-cta {
+    border: 1px solid rgba(229, 231, 235, 0.18);
+    background: #1A1A1A;
+    color: #F9FAFB;
+}
+html.theme-light .mobile-conversion-bar {
+    border-top-color: rgba(180, 146, 90, 0.38);
+    background: rgba(250, 248, 245, 0.96);
+    box-shadow: 0 -10px 30px rgba(28, 27, 25, 0.12);
+}
+html.theme-light .mobile-estimate-cta {
+    border-color: rgba(87, 83, 78, 0.20);
+    background: #FFFFFF;
+    color: #57534E;
+}
+
 /* ==========================================================================
    INK BLEED THEME TRANSITION
    ========================================================================== */
