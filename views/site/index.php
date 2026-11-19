@@ -803,11 +803,11 @@ $mobileSeqBaseUrl = Yii::getAlias('@web') . '/images/mobile-sequence';
                 <span>Interactive Style Customizer</span>
             </div>
             <h1 class="text-3xl sm:text-5xl lg:text-6xl font-serif font-black tracking-tight text-white leading-tight">
-                Interiors That Define <br>
-                <span class="text-gold-gradient italic">Your Legacy</span>
+                Turnkey 2BHK &amp; 3BHK Interiors <br>
+                <span class="text-gold-gradient italic">in Bhubaneswar</span>
             </h1>
             <p class="text-sm sm:text-base text-gray-300 mt-4 leading-relaxed font-light">
-                Switch design presets, explore different room atmospheres, and toggle lighting moods in real time. Experience what your bespoke space looks like before it is built.
+                Complete design, execution and 45-day handover for homes across Bhubaneswar. View real finishes, compare layouts and plan your site visit.
             </p>
         </div>
 

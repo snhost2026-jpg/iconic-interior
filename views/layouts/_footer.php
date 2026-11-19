@@ -9,14 +9,14 @@ $settings = SiteSettings::get();
 $services = Service::active()->limit(6)->all();
 ?>
 
-<footer class="relative shrink-0 bg-[#080808] border-t border-white/5 pt-16 md:pt-24 pb-12 overflow-hidden text-gray-400">
+<footer class="relative shrink-0 bg-[#1C1B19] border-t border-[#B4925A]/20 pt-16 md:pt-24 pb-28 sm:pb-12 overflow-hidden text-gray-300">
     <!-- Ambient Gold Glow -->
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-gradient-to-b from-[#D4AF37]/5 to-transparent blur-2xl pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
-            <!-- Brand Column (4 cols) -->
-            <div class="lg:col-span-4 flex flex-col gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 xl:gap-12 mb-16">
+            <!-- Brand Column (5 cols on lg, 4 cols on xl) -->
+            <div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-6 min-w-0">
                 <?= $this->render('_logo', ['size' => 'md', 'showTagline' => true]) ?>
                 <p class="text-sm leading-relaxed text-gray-400 mt-2 max-w-sm">
                     <?= Html::encode($settings->footer_text) ?>
@@ -29,7 +29,7 @@ $services = Service::active()->limit(6)->all();
             </div>
 
             <!-- Quick Links (2 cols) -->
-            <div class="lg:col-span-2">
+            <div class="lg:col-span-2 xl:col-span-2 min-w-0">
                 <h4 class="text-xs font-bold tracking-[0.24em] uppercase text-white mb-6 border-b border-[#D4AF37]/20 pb-2 inline-block">
                     Explore
                 </h4>
@@ -43,8 +43,8 @@ $services = Service::active()->limit(6)->all();
                 </ul>
             </div>
 
-            <!-- Signature Services (3 cols) -->
-            <div class="lg:col-span-3">
+            <!-- Signature Services (2 cols on lg, 3 cols on xl) -->
+            <div class="lg:col-span-2 xl:col-span-3 min-w-0">
                 <h4 class="text-xs font-bold tracking-[0.24em] uppercase text-white mb-6 border-b border-[#D4AF37]/20 pb-2 inline-block">
                     Services
                 </h4>
@@ -52,8 +52,8 @@ $services = Service::active()->limit(6)->all();
                     <?php foreach ($services as $svc): ?>
                         <li>
                             <a href="<?= Url::to(['/service/view', 'slug' => $svc->slug]) ?>" class="hover:text-[#D4AF37] transition-colors flex items-center gap-2">
-                                <span class="text-[#D4AF37] text-xs">◆</span>
-                                <span><?= Html::encode($svc->title) ?></span>
+                                <span class="text-[#D4AF37] text-xs shrink-0">◆</span>
+                                <span class="truncate"><?= Html::encode($svc->title) ?></span>
                             </a>
                         </li>
                     <?php endforeach; ?>
@@ -61,7 +61,7 @@ $services = Service::active()->limit(6)->all();
             </div>
 
             <!-- Contact & Studio Info (3 cols) -->
-            <div class="lg:col-span-3 flex flex-col gap-4">
+            <div class="lg:col-span-3 xl:col-span-3 flex flex-col gap-4 min-w-0">
                 <h4 class="text-xs font-bold tracking-[0.24em] uppercase text-white mb-2 border-b border-[#D4AF37]/20 pb-2 inline-block">
                     Studio & Reach
                 </h4>

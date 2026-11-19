@@ -391,14 +391,14 @@ input[type=range].lux-range::-moz-range-thumb { width: 20px; height: 20px; borde
 /* 1. Global CSS Variables for Light / White Theme */
 html.theme-light {
     --obsidian: #FAF8F5;
-    --charcoal: #F2EFE9;
+    --charcoal: #F5F2EB;
     --graphite: #EAE5DC;
     --bg-site: #FAF8F5;
-    --bg-card: #FFFFFF;
+    --bg-card: #FDFBF8;
     --bg-footer: #F5F2EB;
-    --text-primary: #111827;
-    --text-secondary: #374151;
-    --text-muted: #6B7280;
+    --text-primary: #1C1B19;
+    --text-secondary: #57534E;
+    --text-muted: #78716C;
     --border-light: rgba(212, 175, 55, 0.22);
     color-scheme: light;
 }
@@ -406,7 +406,7 @@ html.theme-light {
 /* 2. Body background and base text in white theme */
 html.theme-light body {
     background-color: #FAF8F5 !important;
-    color: #111827 !important;
+    color: #1C1B19 !important;
 }
 
 /* 3. CORE REQUIREMENT: In white theme, ALL white text classes BECOME BLACK */
@@ -419,7 +419,7 @@ html.theme-light .text-gray-100,
 html.theme-light .text-gray-200,
 html.theme-light .text-slate-100,
 html.theme-light .text-slate-200 {
-    color: #111827 !important;
+    color: #1C1B19 !important;
 }
 
 /* 4. Muted light-gray text becomes readable dark charcoal/gray */
@@ -431,7 +431,7 @@ html.theme-light .text-stone-300,
 html.theme-light .text-stone-400,
 html.theme-light .text-\[\#C8B89A\],
 html.theme-light .text-\[\#A89060\] {
-    color: #4B5563 !important;
+    color: #57534E !important;
 }
 
 /* 5. Headings in white theme are solid black */
@@ -441,7 +441,7 @@ html.theme-light h3:not(#pre-hero-scroll *):not(.phl *),
 html.theme-light h4:not(#pre-hero-scroll *):not(.phl *),
 html.theme-light h5:not(#pre-hero-scroll *):not(.phl *),
 html.theme-light h6:not(#pre-hero-scroll *):not(.phl *) {
-    color: #111827;
+    color: #1C1B19;
 }
 
 /* 6. Section backgrounds: dark backgrounds become light luxury backgrounds */
@@ -575,16 +575,16 @@ html.theme-light .site-header .nav-link.active {
 
 /* 13. Footer in light theme */
 html.theme-light footer {
-    background-color: #F4F0E6 !important;
-    border-top: 1px solid rgba(212, 175, 55, 0.3) !important;
-    color: #4B5563 !important;
+    background-color: #F5F2EB !important;
+    border-top: 1px solid rgba(180, 146, 90, 0.28) !important;
+    color: #57534E !important;
 }
 html.theme-light footer h4 {
-    color: #111827 !important;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.45) !important;
+    color: #1C1B19 !important;
+    border-bottom: 1px solid rgba(180, 146, 90, 0.38) !important;
 }
 html.theme-light footer a {
-    color: #374151 !important;
+    color: #57534E !important;
 }
 html.theme-light footer a:hover {
     color: #D4AF37 !important;
